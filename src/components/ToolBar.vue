@@ -4,9 +4,9 @@
       <div class="toolbar-tools-tags">
         <vs-tooltip placement="right">
           <div class="toolbar-avatar">
-            <img src="@/assets/avatar.jpg" :alt="user_name" />
+            <img :src="character_info?.data?.avatar" :alt="character_info?.data?.user_name" />
           </div>
-          <template #content>当前角色: {{ user_name }}</template>
+          <template #content>当前角色: {{ character_info?.data?.user_name }}</template>
         </vs-tooltip>
 
         <div class="toolbar-tools">
@@ -34,15 +34,15 @@
           <vs-tooltip placement="right">
             <div
               :class="
-                props.selected_panel == 'charactars'
+                props.selected_panel == 'characters'
                   ? 'toolbar-tools-btn-selected'
                   : 'toolbar-tools-btn'
               "
-              @click="change_selection('charactars')"
+              @click="change_selection('characters')"
             >
               <UserIconOutline
                 class="toolbar-tools-icon"
-                v-if="props.selected_panel != 'charactars'"
+                v-if="props.selected_panel != 'characters'"
               />
               <UserIconSolid class="toolbar-tools-icon-selected" v-else />
             </div>
@@ -116,15 +116,15 @@
         <vs-tooltip placement="right">
           <div
             :class="
-              props.selected_panel == 'charactar_manage'
+              props.selected_panel == 'character_manage'
                 ? '!mb-1 !mt-0 toolbar-tools-btn-selected'
                 : '!mb-1 !mt-0 toolbar-tools-btn'
             "
-            @click="change_selection('charactar_manage')"
+            @click="change_selection('character_manage')"
           >
             <ListBulletIconOutline
               class="toolbar-tools-icon"
-              v-if="props.selected_panel != 'charactar_manage'"
+              v-if="props.selected_panel != 'character_manage'"
             />
             <ListBulletIconSolid class="toolbar-tools-icon-selected" v-else />
           </div>
@@ -138,7 +138,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import {
   ChatBubbleOvalLeftEllipsisIcon as ChatBubbleOvalLeftEllipsisIconOutline,
   UserIcon as UserIconOutline,
@@ -157,8 +157,9 @@ import {
 } from '@heroicons/vue/24/solid'
 
 import type { Selection } from '@/types'
+import type { CharacterResponse } from '@/models/character'
 
-const user_name = ref<string>('白芷')
+const character_info = ref<CharacterResponse>()
 
 const props = defineProps<{
   selected_panel: Selection
@@ -171,6 +172,11 @@ const emits = defineEmits<{
 function change_selection(traget: Selection) {
   emits('update:selected_panel', traget)
 }
+
+onMounted(async () => {
+  const resp = await fetch('/api/character?uid=1')
+  character_info.value = await resp.json();
+})
 </script>
 
 <style scoped>

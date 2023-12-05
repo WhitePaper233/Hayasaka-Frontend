@@ -14,5 +14,14 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://mock.apifox.com/m1/3698988-0-default',
+        secure: false,
+        changeOrigin: true,
+      }
+    }
   }
 })
